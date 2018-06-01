@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Better Looking Alarm Clock</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+
+    .navbar {
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+    /* Add a gray background color and some padding to the footer */
+
+    footer {
+        background-color: #f2f2f2;
+        padding: 25px;
+    }
+
+    .row {
+        padding-top: 20%;
+    }
+
+    /*#myClock {
+        font-size: 50px;
+    }
+
+    #displayedClock {
+        font-size: 50px;
+    }*/
+
+    .clock {
+    	font-size: 50px;
+    	padding-top: auto;
+    	z-index: 1;
+    }
+
+
+    //background mode
+    </style>
+</head>
+
+<body translate="no" onload="ranNum(); hideClock()">
+    <div class="container text-center">
+        <h2>Alarm Clock</h2>
+        <div class="row">
+            <div class="col-sm-4">
+            </div>
+            <div class="col-sm-4">
+                <div class="clock" id="myClock"></div>
+                <div class="clock" id="displayedClock"></div>
+                <div id="selectors">
+                    <span>
+                <select id='selctorHour'></select>
+            </span>
+                    <span>
+                <select id='selectorMin'></select>
+            </span>
+                    <span>
+                <select id='selectorSec'></select>
+            </span>
+                </div>
+                <div id="alarmSetFor">ALARM NOT SET</div>
+                <button id="stopAlarm" type="button" onclick="pause()">
+                    Stop Alarm
+                </button>
+                <button id="playAlarm" type="button" onclick="play()">
+                    Play Alarm
+                </button>
+                <button id="setAlarm" type="button">Set Alarm</button>
+            </div>
+            <div class="col-sm-4">
+            </div>
+        </div>
+    </div>
+    <div id="randomNumber"></div>
+    <div id="alarmHour" type="text"></div>
+    <div id="alarmMinute" type="text"></div>
+    <div id="alarmSecond" type="text"></div>
+    <audio id="myAudio">
+        <source src="bornToRun.mp3" type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script type="text/javascript">
+    console.clear();
+
+    var audio = document.getElementById("myAudio");
+    console.log("audio loaded", audio);
+
+    function ranNum() {
+        randomNumber = Math.floor(Math.random() * 13);
+        $("#placeForRandomNumber").text(randomNumber)
+        console.log(randomNumber)
+    }
+
+    function hideClock() {
+        document.getElementById("displayedClock").style.visibility = "hidden";
+    }
+
+    function addZero(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+
+    //prints clock, defines audio, plays audio on setAlarm time
+    function printMyClock() {
+        var d = new Date();
+        var sec = d.getSeconds();
+        var min = d.getMinutes();
+        var hour = d.getHours();
+        // if (sec < 10) {
+        //     sec = "0" + sec;
+        // }
+        // if (min < 10) {
+        //     min = "0" + min;
+        // }
+        if (hour > 12) {
+            hour = hour - 12;
+        }
+        //audio = new Audio('file:///C:/Users/SAAS_User/Desktop/bornToRun.mp3.mp3');
+        $("#myClock").text(addZero(hour) + ":" + addZero(min) + ":" + addZero(sec));
+        if (sec == alarmSecond && min == randomAlarmMinute && hour == alarmHour) {
+            // audio.play();
+            play();
+        }
+    }
+
+    function printDisplayedClock() {
+        var displayedD = new Date();
+        var displayedSec = displayedD.getSeconds();
+        var displayedMin = displayedD.getMinutes();
+        var displayedHour = displayedD.getHours();
+        displayedMin = displayedMin + randomNumber;
+        // if (displayedMin) {}
+        // if (displayedSec < 10) {
+        //     displayedSec = "0" + displayedSec;
+        // }
+        // if (displayedMin < 10) {
+        //     displayedMin = "0" + displayedMin;
+        // }
+        if (displayedHour > 12) {
+            displayedHour = displayedHour - 12;
+        }
+        if (displayedMin >= 60) {
+            displayedMin = displayedMin - 60;
+            displayedHour = displayedHour + 1;
+        }
+        //audio = new Audio('file:///C:/Users/SAAS_User/Desktop/bornToRun.mp3.mp3');
+        $("#displayedClock").text(addZero(displayedHour) + ":" + addZero(displayedMin) + ":" + addZero(displayedSec));
+    }
+
+    //alarm setting button
+    $("#setAlarm").click(function() {
+        alarmHour = document.getElementById("selctorHour").value;
+        alarmMinute = document.getElementById("selectorMin").value;
+        alarmSecond = document.getElementById("selectorSec").value;
+        alarmHour = addZero(alarmHour);
+        alarmMinute = addZero(alarmMinute);
+        alarmSecond = addZero(alarmSecond);
+        if (alarmHour > 12) {
+            alarmHour = alarmHour - 12;
+        }
+        randomAlarmMinute = alarmMinute - randomNumber;
+        if (randomAlarmMinute < 0) {
+            realAlarmHour = alarmHour;
+            alarmHour = alarmHour - 1;
+            if (alarmHour < 1) {
+                alarmHour = 12
+            }
+            randomAlarmMinute = 60 + randomAlarmMinute;
+        }
+
+        displayedAlarmMinute = alarmMinute + randomNumber;
+        console.log("ALARM ACTUALLY SET FOR:" + alarmHour + ":" + randomAlarmMinute + ":" + alarmSecond);
+        document.getElementById("displayedClock").style.visibility = "visible"; //use display not visibility
+        document.getElementById("myClock").style.visibility = "hidden";
+        $("#alarmSetFor").text("ALARM SET FOR:" + realAlarmHour + ":" + alarmMinute + ":" + alarmSecond);
+    });
+
+    //quickset button - temporary
+    $("#quickSet").click(function() {
+        alarmHour = hour;
+        alarmMinute = min;
+        alarmSecond = sec + 10;
+        console.log("ALARM SET FOR:" + alarmHour + ":" + alarmMinute + ":" + alarmSecond);
+        $("#alarmSetFor").text("ALARM SET FOR:" + alarmHour + ":" + alarmMinute + ":" + alarmSecond);
+    })
+
+    //random number maker
+    $("#randomNumber").click(function() {
+        randomNumber = Math.floor(Math.random() * 13);
+        console.log("random number:" + randomNumber);
+    });
+
+
+    printMyClock();
+    setInterval(printMyClock, 1000);
+
+    printDisplayedClock();
+    setInterval(printDisplayedClock, 1000);
+
+    function pause() {
+        console.log("audio paused", audio)
+        audio.pause();
+    }
+
+    function play() {
+        console.log("audio played", audio);
+        audio.play();
+    }
+
+
+    // $("#stopAlarm").click(function() {
+    //   pause();
+    //   console.log("pause")
+    // });
+
+    // $("#play").click(function() {
+    //   audio.play();
+    // });
+
+
+    //sets up options inside the hour selector
+    function hoursMenu() {
+
+        var select = document.getElementById("selctorHour");
+        var hrs = 12
+
+        for (i = 1; i <= hrs; i++) {
+            select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);
+
+        }
+    }
+    hoursMenu();
+
+    //sets up options inside the minute selector
+    function minMenu() {
+
+        var select = document.getElementById("selectorMin");
+        var min = 59;
+
+        for (i = 0; i <= min; i++) {
+            select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);
+        }
+    }
+    minMenu();
+
+    //sets up options inside the minute selector
+    function secMenu() {
+
+        var select = document.getElementById("selectorSec");
+        var sec = 59;
+
+        for (i = 0; i <= sec; i++) {
+            select.options[select.options.length] = new Option(i < 10 ? "0" + i : i, i);
+        }
+    }
+    secMenu();
+    </script>
+</body>
+
+</html>
